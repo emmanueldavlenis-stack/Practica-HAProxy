@@ -1,0 +1,63 @@
+services:
+  frontend:
+    build:
+        context: ./frontend
+        dockerfile: Dockerfile # Ensure you have a Dockerfile for the FastAPI app
+    container_name: frontend-container
+    hostname: frontend-container
+    restart: always
+    networks:
+      - app-net
+    
+
+  backend-1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # Ensure you have a Dockerfile for the FastAPI app
+    container_name: apache-container-1
+    hostname: apache-container-1
+    restart: always
+    networks:
+      - app-net
+
+
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # Ensure you have a Dockerfile for the FastAPI app
+    container_name: apache-container-2
+    hostname: apache-container-2
+    restart: always
+    networks:
+      - app-net
+  
+
+  backend-3:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile # Ensure you have a Dockerfile for the FastAPI app
+    container_name: apache-container-3
+    hostname: apache-container-3
+    restart: always
+    networks:
+      - app-net
+
+  haproxy:
+    image: haproxy:2.8
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend-1
+      - backend-2     
+      - backend-3
+
+
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
